@@ -10,18 +10,20 @@
   --color-bg-s: 100%;
   --color-bg-l: 96%;
 
-  /* Sky Blue */
+  /* Core Colors */
   --color-primary: hsl(195, 90%, 60%);
-  /* Fresh Mint/Teal */
+  --color-primary-dark: hsl(195, 90%, 45%);
   --color-accent: hsl(170, 80%, 45%);
 
-  --color-text-main: hsl(200, 30%, 20%);
-  --color-text-sub: hsl(200, 15%, 50%);
+  --color-text-main: hsl(200, 50%, 15%);
+  --color-text-sub: hsl(200, 25%, 45%);
 
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(190, 240, 255, 0.5);
-  --shadow-soft: 0 8px 32px rgba(186, 230, 253, 0.3);
-  --shadow-hover: 0 10px 20px rgba(14, 165, 233, 0.15);
+  /* Glassmorphism - Premium, lighter */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-highlight: rgba(255, 255, 255, 0.8);
+  --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.05);
+  --shadow-hover: 0 14px 40px rgba(14, 165, 233, 0.15);
 
   --font-main: 'Inter',
     -apple-system,
@@ -29,9 +31,9 @@
     "Segoe UI",
     Roboto,
     sans-serif;
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 8px;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 10px;
 }
 
 * {
@@ -42,23 +44,124 @@
 
 body {
   font-family: var(--font-main);
-  background: linear-gradient(180deg, #FFFFFF 0%, #E0F2FE 100%);
+  /* Rich Mesh Gradient Background */
+  background-color: #F0F9FF;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.8) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(186, 230, 253, 0.8) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 228, 230, 0.5) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(221, 214, 254, 0.5) 0px, transparent 50%),
+    linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 100%);
+  background-attachment: fixed;
   color: var(--color-text-main);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
 /* Glassmorphism Utility Class */
+/* Glassmorphism Utility Class */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
+  border-top: 1px solid var(--glass-highlight);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
 }
 
+/* --- Added Responsive Menu Styles --- */
+
+.menu-wrapper {
+  width: 90%;
+  max-width: 920px;
+  padding: 20px 20px 40px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.menu-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 10px;
+  color: var(--color-text-main);
+}
+
+.menu-description {
+  color: var(--color-text-sub);
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.game-card {
+  padding: 24px;
+  border-radius: 28px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--color-text-main);
+  text-align: left;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 20px 40px -5px rgba(14, 165, 233, 0.25),
+    0 10px 15px -5px rgba(14, 165, 233, 0.1),
+    inset 0 0 0 2px var(--color-primary);
+  border-color: transparent;
+}
+
+/* Tablet and Desktop adjustments */
+@media (min-width: 640px) {
+  .menu-title {
+    font-size: 3.1rem;
+  }
+
+  .menu-description {
+    font-size: 1.05rem;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  .game-card {
+    padding: 24px;
+  }
+}
+
+/* ------------------------------------- */
+
 /* Animations */
+@keyframes ping {
+
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -329,4 +432,59 @@ button {
   --pastel-green: hsl(150, 60%, 85%);
   --pastel-yellow: hsl(50, 70%, 85%);
   --pastel-orange: hsl(30, 70%, 85%);
+}
+
+/* --- Game Layout Styles --- */
+.game-layout-container {
+  width: 100%;
+  height: 100vh;
+  /* Fallback */
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.game-layout-inner {
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 80px;
+  position: relative;
+}
+
+.game-content-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.4);
+  /* lighter glass for inner container */
+  border: none;
+  box-shadow: none;
+  overflow-y: auto;
+  /* Allow scrolling inside panel if needed */
+}
+
+@media (min-width: 640px) {
+  .game-layout-container {
+    padding: 20px;
+  }
+
+  .game-layout-inner {
+    height: auto;
+    max-height: 90vh;
+    padding-bottom: 100px;
+  }
+
+  .game-content-panel {
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    /* Ensure radius is applied on desktop */
+  }
 }

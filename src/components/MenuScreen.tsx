@@ -35,42 +35,64 @@ const MenuScreen: React.FC = () => {
     ];
 
     return (
-        <div style={{
-            width: '90%',
-            maxWidth: '920px',
-            padding: '20px 20px 40px',
-            textAlign: 'center'
-        }}>
+        <div className="menu-wrapper">
+            {/* Hero Glow */}
+            <div style={{
+                position: 'absolute',
+                top: '5%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '120%',
+                height: '400px',
+                background: 'radial-gradient(50% 50% at 50% 50%, rgba(14, 165, 233, 0.15) 0%, rgba(255, 255, 255, 0) 100%)',
+                pointerEvents: 'none',
+                zIndex: -1
+            }} />
+
             <div style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '6px 14px',
+                padding: '8px 16px',
                 borderRadius: '999px',
-                background: 'rgba(255, 255, 255, 0.9)',
+                background: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(4px)',
                 boxShadow: '0 4px 12px rgba(186, 230, 253, 0.4)',
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                color: 'var(--color-primary)',
-                border: '1px solid #e0f2fe',
-                margin: '0 auto 20px'
+                color: 'var(--color-primary-dark)',
+                border: '1px solid rgba(255,255,255,0.8)',
+                margin: '0 auto 24px'
             }}>
                 <span style={{
-                    width: '8px',
+                    position: 'relative',
+                    display: 'flex',
                     height: '8px',
-                    borderRadius: '999px',
-                    background: 'var(--color-primary)'
-                }} />
+                    width: '8px'
+                }}>
+                    <span style={{
+                        position: 'absolute',
+                        display: 'inline-flex',
+                        height: '100%',
+                        width: '100%',
+                        borderRadius: '9999px',
+                        background: 'var(--color-primary)',
+                        opacity: 0.75,
+                        animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite'
+                    }}></span>
+                    <span style={{
+                        position: 'relative',
+                        display: 'inline-flex',
+                        borderRadius: '9999px',
+                        height: '8px',
+                        width: '8px',
+                        background: 'var(--color-primary)'
+                    }}></span>
+                </span>
                 Speaking Gym ✨
             </div>
 
-            <h1 style={{
-                fontSize: '3.1rem',
-                fontWeight: '800',
-                lineHeight: 1.1,
-                marginBottom: '10px',
-                color: 'var(--color-text-main)'
-            }}>
+            <h1 className="menu-title">
                 <span style={{
                     background: 'linear-gradient(135deg, var(--color-primary), #0ea5e9)',
                     WebkitBackgroundClip: 'text',
@@ -85,18 +107,14 @@ const MenuScreen: React.FC = () => {
                     WebkitTextFillColor: 'transparent'
                 }}>Communication</span>
             </h1>
-            <p style={{ color: 'var(--color-text-sub)', marginBottom: '6px', fontSize: '1.05rem' }}>
+            <p className="menu-description">
                 A playful, modern speaking gym that builds confidence through improvisation.
             </p>
-            <p style={{ color: 'var(--color-text-sub)', marginBottom: '34px', fontSize: '0.98rem' }}>
+            <p className="menu-description" style={{ marginBottom: '34px' }}>
                 Choose a game and start practicing!
             </p>
 
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                gap: '20px'
-            }}>
+            <div className="menu-grid">
                 {games.map((game, idx) => (
                     <Link
                         key={game.id}
@@ -106,32 +124,7 @@ const MenuScreen: React.FC = () => {
                             color: 'inherit'
                         }}
                     >
-                        <div
-                            style={{
-                                padding: '24px',
-                                borderRadius: '24px',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                border: '2px solid transparent',
-                                height: '100%',
-                                background: 'white',
-                                color: 'var(--color-text-main)',
-                                textAlign: 'left',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-                                position: 'relative',
-                                overflow: 'hidden'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px)';
-                                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.01)';
-                                e.currentTarget.style.borderColor = 'var(--color-primary)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)';
-                                e.currentTarget.style.borderColor = 'transparent';
-                            }}
-                        >
+                        <div className="game-card">
                             <div style={{
                                 width: '48px',
                                 height: '48px',

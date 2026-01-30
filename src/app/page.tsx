@@ -11,9 +11,11 @@ export default function Home() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100vh',
-      height: '100vh',
+      width: '100%',
       position: 'relative',
-      overflow: 'hidden'
+      overflowX: 'hidden',
+      paddingTop: '40px',
+      paddingBottom: '40px'
     }}>
       <MenuScreen />
     </main>

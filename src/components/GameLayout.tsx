@@ -11,31 +11,16 @@ interface GameLayoutProps {
 
 const GameLayout: React.FC<GameLayoutProps> = ({ children, onBack, timer, score, title }) => {
     return (
-        <div style={{
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
-        }}>
-            <div style={{
-                width: '100%',
-                maxWidth: '800px',
-                height: 'auto',
-                maxHeight: '90vh',
-                display: 'flex',
-                flexDirection: 'column',
-                paddingBottom: '100px', // Space for fixed mic indicator
-                position: 'relative'
-            }} className="animate-fade-in">
+
+        <div className="game-layout-container">
+            <div className="game-layout-inner animate-fade-in">
 
                 {/* Header */}
                 <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: '30px'
+                    marginBottom: '20px'
                 }}>
                     <button
                         onClick={onBack}
@@ -75,16 +60,7 @@ const GameLayout: React.FC<GameLayoutProps> = ({ children, onBack, timer, score,
                 </div>
 
                 {/* Main Content Area */}
-                <div className="glass-panel" style={{
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '30px',
-                    position: 'relative',
-                    background: 'rgba(255,255,255,0.4)', // lighter glass for inner container
-                    border: 'none',
-                    boxShadow: 'none'
-                }}>
+                <div className="glass-panel game-content-panel">
                     {children}
                 </div>
 
