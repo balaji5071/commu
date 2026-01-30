@@ -94,21 +94,20 @@ const MenuScreen: React.FC = () => {
 
             <h1 className="menu-title">
                 <span style={{
-                    background: 'linear-gradient(135deg, var(--color-primary), #0ea5e9)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
-                }}>Mastering</span>
-                <br />
-                Spontaneous
-                <br />
+                    // background: 'linear-gradient(135deg, var(--color-primary), #0ea5e9)',
+                    // WebkitBackgroundClip: 'text',
+                    // WebkitTextFillColor: 'transparent'
+                }}>Mastering </span>
+                <span/>
+                Spontaneous<span/>
                 <span style={{
                     background: 'linear-gradient(135deg, #38bdf8, var(--color-primary))',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent'
-                }}>Communication</span>
+                }}>  Communication</span>
             </h1>
             <p className="menu-description">
-                A playful, modern speaking gym that builds confidence through improvisation.
+                {/* A playful, modern speaking gym that builds confidence through improvisation. */}
             </p>
             <p className="menu-description" style={{ marginBottom: '34px' }}>
                 Choose a game and start practicing!
