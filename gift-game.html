@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gift Giving Game — Two Friends</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --pastel-a: #ffd6e7;
+      --pastel-b: #d6f6ff;
+      --pastel-c: #e7e1ff;
+      --pastel-d: #dcfce7;
+      --text: #1f2937;
+      --sub: #6b7280;
+      --ai: #9aa7ff;
+      --user: #7fd1ae;
+      --shadow: 0 10px 30px rgba(20, 20, 40, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #ffffff, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(1100px, 96vw);
+      display: grid;
+      gap: 20px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 12px 0 4px;
+    }
+
+    .header h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header p { color: var(--sub); margin-top: 6px; }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      padding: 6px 0 14px;
+    }
+
+    .btn {
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: none;
+      background: white;
+      box-shadow: var(--shadow);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-width: 200px;
+    }
+
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(20, 20, 40, 0.12); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      min-height: 420px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: -40% -40% auto auto;
+      height: 120%;
+      width: 120%;
+      background: radial-gradient(circle, rgba(255,255,255,0.7), transparent 60%);
+      opacity: 0.35;
+    }
+
+    .card.ai { background: linear-gradient(135deg, #f5f3ff, #eef2ff); }
+    .card.user { background: linear-gradient(135deg, #ecfeff, #f0fdf4); }
+
+    .identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: white;
+    }
+
+    .ai .avatar { background: linear-gradient(135deg, #8b5cf6, #60a5fa); }
+    .user .avatar { background: linear-gradient(135deg, #10b981, #34d399); }
+
+    .speaking {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+      animation: glow 1.6s infinite;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.45); }
+      70% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+
+    .indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--sub);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #60a5fa;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .chat {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: auto;
+      padding-right: 6px;
+    }
+
+    .bubble {
+      padding: 10px 12px;
+      border-radius: 14px;
+      max-width: 90%;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .bubble.ai { background: rgba(139, 92, 246, 0.14); align-self: flex-start; }
+    .bubble.user { background: rgba(16, 185, 129, 0.18); align-self: flex-start; }
+    .bubble.system { background: rgba(148, 163, 184, 0.22); align-self: center; font-size: 0.85rem; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .typing {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #64748b;
+      animation: blink 1s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    .live {
+      font-size: 0.9rem;
+      color: var(--sub);
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .gift-reveal {
+      text-align: center;
+      padding: 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--pastel-a), var(--pastel-c));
+      font-weight: 700;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.4s ease;
+    }
+
+    .gift-reveal.show { opacity: 1; transform: scale(1); }
+
+    .footer {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.9rem;
+      min-height: 22px;
+    }
+
+    .status {
+      text-align: center;
+      font-weight: 700;
+      color: #6366f1;
+      min-height: 22px;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>Gift Giving — Two Friends</h1>
+      <p>Two friends improvising gifts and reasons, one turn at a time.</p>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="btnReceive">Receive a Gift</button>
+      <button class="btn" id="btnGive">Give a Gift</button>
+      <button class="btn" id="btnReplay" disabled>Replay Round</button>
+    </div>
+
+    <div class="status" id="status">Choose a mode to begin.</div>
+
+    <div class="layout">
+      <div class="card ai" id="aiCard">
+        <div class="identity">
+          <div class="avatar">A</div>
+          <div>
+            <div>Friend A (AI)</div>
+            <div class="indicator"><span class="dot"></span><span id="aiIndicator">idle</span></div>
+          </div>
+        </div>
+        <div class="gift-reveal" id="giftReveal">Gift: ???</div>
+        <div class="chat" id="aiChat"></div>
+        <div class="live" id="aiLive">AI is waiting…</div>
+      </div>
+
+      <div class="card user" id="userCard">
+        <div class="identity">
+          <div class="avatar">B</div>
+          <div>
+            <div>Friend B (You)</div>
+            <div class="indicator"><span class="dot"></span><span id="userIndicator">idle</span></div>
+          </div>
+        </div>
+        <div class="gift-reveal" id="userGiftReveal">Your gift: ???</div>
+        <div class="chat" id="userChat"></div>
+        <div class="live" id="userLive">Press a mode to begin.</div>
+      </div>
+    </div>
+
+    <div class="footer" id="footer"></div>
+  </div>
+
+  <script>
+    const gifts = [
+      'frog leg', 'glowing stone', 'broken watch', 'flying shoe', 'mystery box',
+      'singing teacup', 'invisible hat', 'whispering map', 'sparkly pebble'
+    ];
+
+    const reactions = [
+      'Whoa! I didn\'t expect that!',
+      'This is hilarious but I love it.',
+      'That\'s oddly perfect for me.',
+      'Surprising… and kind of wonderful.'
+    ];
+
+    const completions = [
+      'Great spontaneity!',
+      'Nice instinctive response!',
+      'You reacted quickly — that\'s the goal.'
+    ];
+
+    const stopwords = new Set(
+      'the a an to is are was were it this that because and but or of for with my your you i we they he she them me in on at from by'.split(' ')
+    );
+
+    const emotionWords = ['love', 'like', 'funny', 'weird', 'gross', 'sweet', 'cute', 'strange', 'cool', 'amazing', 'odd', 'hilarious', 'nostalgic'];
+    const intentWords = ['remember', 'memory', 'care', 'comfort', 'joke', 'symbol', 'meaning', 'surprise', 'support', 'encourage'];
+
+    const state = {
+      mode: null,
+      phase: null,
+      currentGift: null,
+      roundStatus: 'idle',
+      retry: 0
+    };
+
+    const aiCard = document.getElementById('aiCard');
+    const userCard = document.getElementById('userCard');
+    const aiChat = document.getElementById('aiChat');
+    const userChat = document.getElementById('userChat');
+    const aiLive = document.getElementById('aiLive');
+    const userLive = document.getElementById('userLive');
+    const giftReveal = document.getElementById('giftReveal');
+    const userGiftReveal = document.getElementById('userGiftReveal');
+    const status = document.getElementById('status');
+    const footer = document.getElementById('footer');
+    const btnReceive = document.getElementById('btnReceive');
+    const btnGive = document.getElementById('btnGive');
+    const btnReplay = document.getElementById('btnReplay');
+    const aiIndicator = document.getElementById('aiIndicator');
+    const userIndicator = document.getElementById('userIndicator');
+
+    let recognition = null;
+    let silenceTimer = null;
+    let liveBubble = null;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        let final = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const res = event.results[i];
+          if (res.isFinal) final += res[0].transcript + ' ';
+          else interim += res[0].transcript + ' ';
+        }
+        if (interim) updateLive(interim.trim());
+        if (final.trim()) {
+          handleFinal(final.trim());
+        }
+        resetSilenceTimer();
+      };
+
+      recognition.onerror = () => {
+        promptRetry('I didn\'t catch that. Want to try again?');
+      };
+
+      recognition.onend = () => {
+        if (state.roundStatus === 'listening') {
+          promptRetry('I didn\'t hear anything. Try again?');
+        }
+      };
+    } else {
+      status.textContent = 'Speech Recognition not supported in this browser.';
+    }
+
+    function addBubble(who, text, type = 'normal') {
+      const bubble = document.createElement('div');
+      bubble.className = `bubble ${who} ${type === 'system' ? 'system' : ''}`;
+      if (type === 'typing') {
+        bubble.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+      } else {
+        bubble.textContent = text;
+      }
+      (who === 'ai' ? aiChat : userChat).appendChild(bubble);
+      (who === 'ai' ? aiChat : userChat).scrollTop = 9999;
+      return bubble;
+    }
+
+    function addSystem(text) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble system';
+      bubble.textContent = text;
+      aiChat.appendChild(bubble.cloneNode(true));
+      userChat.appendChild(bubble);
+    }
+
+    function typingThen(who, text, delay = 900) {
+      const bubble = addBubble(who, '', 'typing');
+      setTimeout(() => {
+        bubble.classList.remove('system');
+        bubble.textContent = text;
+      }, delay);
+    }
+
+    function setSpeaking(who) {
+      aiCard.classList.remove('speaking');
+      userCard.classList.remove('speaking');
+      if (who === 'ai') {
+        aiCard.classList.add('speaking');
+        aiIndicator.textContent = 'speaking';
+        userIndicator.textContent = 'listening';
+      } else if (who === 'user') {
+        userCard.classList.add('speaking');
+        userIndicator.textContent = 'speaking';
+        aiIndicator.textContent = 'listening';
+      } else {
+        aiIndicator.textContent = 'idle';
+        userIndicator.textContent = 'idle';
+      }
+    }
+
+    function updateLive(text) {
+      if (!liveBubble) {
+        liveBubble = addBubble('user', text);
+      } else {
+        liveBubble.textContent = text;
+      }
+      userLive.textContent = text ? `Listening: "${text}"` : 'Listening…';
+    }
+
+    function finalizeLive(text) {
+      if (liveBubble) {
+        liveBubble.textContent = text;
+        liveBubble = null;
+      } else {
+        addBubble('user', text);
+      }
+    }
+
+    function resetSilenceTimer() {
+      clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(() => {
+        if (state.roundStatus === 'listening') {
+          recognition.stop();
+        }
+      }, 7000);
+    }
+
+    function startListening(prompt) {
+      if (!recognition) return;
+      state.roundStatus = 'listening';
+      state.retry = 0;
+      setSpeaking('user');
+      userLive.textContent = prompt;
+      recognition.start();
+      resetSilenceTimer();
+    }
+
+    function stopListening() {
+      clearTimeout(silenceTimer);
+      if (recognition && state.roundStatus === 'listening') {
+        recognition.stop();
+      }
+    }
+
+    function promptRetry(text) {
+      if (state.retry >= 1) {
+        state.roundStatus = 'processing';
+        typingThen('ai', 'Let\'s try that again when you\'re ready.');
+        setSpeaking('ai');
+        setTimeout(() => {
+          state.roundStatus = 'idle';
+          btnReplay.disabled = false;
+          setSpeaking(null);
+          status.textContent = 'Round paused. You can replay.';
+        }, 900);
+        return;
+      }
+      state.retry += 1;
+      state.roundStatus = 'processing';
+      typingThen('ai', text);
+      setTimeout(() => {
+        startListening('Listening again…');
+      }, 900);
+    }
+
+    function extractKeywords(text) {
+      const words = text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(Boolean);
+      const filtered = words.filter(w => !stopwords.has(w));
+      return [...new Set(filtered)].slice(0, 4);
+    }
+
+    function extractGift(text) {
+      const words = extractKeywords(text);
+      if (!words.length) return 'mystery box';
+      return words.slice(-2).join(' ');
+    }
+
+    function extractIntent(text) {
+      const lower = text.toLowerCase();
+      const emotions = emotionWords.filter(w => lower.includes(w));
+      const intents = intentWords.filter(w => lower.includes(w));
+      return { emotions, intents };
+    }
+
+    function handleFinal(text) {
+      stopListening();
+      state.roundStatus = 'processing';
+      finalizeLive(text);
+
+      if (state.mode === 'RECEIVE' && state.phase === 'reaction') {
+        const keywords = extractKeywords(text);
+        const trait = keywords.length ? keywords.join(', ') : 'curious surprises';
+        const response = `I gave it to you because you seem to enjoy ${trait}.`;
+        typingThen('ai', response);
+        setSpeaking('ai');
+        setTimeout(() => finishRound(), 1200);
+      }
+
+      if (state.mode === 'GIVE' && state.phase === 'gift') {
+        state.currentGift = extractGift(text);
+        userGiftReveal.textContent = `Your gift: ${state.currentGift}`;
+        userGiftReveal.classList.add('show');
+        const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+        typingThen('ai', reaction);
+        setSpeaking('ai');
+        state.phase = 'reason';
+        setTimeout(() => {
+          startListening('Why did you choose that gift?');
+        }, 1200);
+      }
+
+      if (state.mode === 'GIVE' && state.phase === 'reason') {
+        const { emotions, intents } = extractIntent(text);
+        const emotionPart = emotions.length ? `It feels ${emotions[0]}` : 'It feels thoughtful';
+        const intentPart = intents.length ? ` because it carries ${intents[0]} for you.` : ' because you notice small details.';
+        const reflection = `${emotionPart}${intentPart}`;
+        typingThen('ai', reflection);
+        setSpeaking('ai');
+        setTimeout(() => finishRound(), 1400);
+      }
+    }
+
+    function startReceiveFlow() {
+      state.mode = 'RECEIVE';
+      state.phase = 'reaction';
+      btnReceive.disabled = true;
+      btnGive.disabled = true;
+      btnReplay.disabled = true;
+      giftReveal.classList.remove('show');
+      userGiftReveal.classList.remove('show');
+      giftReveal.textContent = 'Gift: ???';
+      userGiftReveal.textContent = 'Your gift: ???';
+      status.textContent = 'AI is choosing a gift…';
+      addSystem('Round start: You receive a gift.');
+
+      setSpeaking('ai');
+      typingThen('ai', 'I\'m giving you something…');
+      state.currentGift = gifts[Math.floor(Math.random() * gifts.length)];
+
+      setTimeout(() => {
+        giftReveal.textContent = `Gift: ${state.currentGift}`;
+        giftReveal.classList.add('show');
+        status.textContent = 'Your turn to react.';
+        startListening('React to the gift.');
+      }, 1200);
+    }
+
+    function startGiveFlow() {
+      state.mode = 'GIVE';
+      state.phase = 'gift';
+      btnReceive.disabled = true;
+      btnGive.disabled = true;
+      btnReplay.disabled = true;
+      giftReveal.classList.remove('show');
+      userGiftReveal.classList.remove('show');
+      giftReveal.textContent = 'Gift: ???';
+      userGiftReveal.textContent = 'Your gift: ???';
+      status.textContent = 'Your turn to give a gift.';
+      addSystem('Round start: You give a gift.');
+      startListening('Say the gift you are giving.');
+    }
+
+    function finishRound() {
+      const message = completions[Math.floor(Math.random() * completions.length)];
+      typingThen('ai', message);
+      footer.textContent = message;
+      status.textContent = 'Round complete. Replay anytime.';
+      setSpeaking(null);
+      state.roundStatus = 'completed';
+      btnReplay.disabled = false;
+      btnReceive.disabled = false;
+      btnGive.disabled = false;
+    }
+
+    btnReceive.addEventListener('click', () => {
+      if (!recognition) return;
+      startReceiveFlow();
+    });
+
+    btnGive.addEventListener('click', () => {
+      if (!recognition) return;
+      startGiveFlow();
+    });
+
+    btnReplay.addEventListener('click', () => {
+      if (state.mode === 'RECEIVE') startReceiveFlow();
+      if (state.mode === 'GIVE') startGiveFlow();
+    });
+  </script>
+</body>
+</html>
