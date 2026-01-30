@@ -17,7 +17,7 @@ const MicIndicator: React.FC<MicIndicatorProps> = ({ isListening, error, onToggl
                 style={{
                     position: 'fixed',
                     bottom: '30px',
-                    left: '50%',
+                    left: '50vw',
                     transform: 'translateX(-50%)',
                     width: '64px',
                     height: '64px',
